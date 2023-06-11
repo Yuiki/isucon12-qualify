@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   AWS CloudFormation for ISUCON12 Qualify
+Parameters:
+  ImageId:
+    Type: AWS::EC2::Image::Id
 Resources:
   GetAvailabilityZoneFunctionExecutionRole:
     Type: AWS::IAM::Role
@@ -148,22 +151,37 @@ Resources:
     Properties:
       KeyName: isucon12-quarify-cfn
 
+  QualifyLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: QualifyLaunchTemplate
+      LaunchTemplateData:
+        ImageId: !Ref ImageId
+        InstanceType: c5.large
+        KeyName: !Ref MyKeyPair
+        IamInstanceProfile: 
+          Name: !Ref InstanceProfile
+        InstanceMarketOptions:
+          MarketType: spot
+          SpotOptions:
+            SpotInstanceType: persistent
+            InstanceInterruptionBehavior: stop
+        BlockDeviceMappings:
+          - DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 20
+              VolumeType: gp3
+
   QualifyInstance1:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-05c5b59deed48f66b
-      InstanceType: c5.large
+      LaunchTemplate:
+        LaunchTemplateId: !Ref QualifyLaunchTemplate
+        Version: !GetAtt QualifyLaunchTemplate.LatestVersionNumber
       SecurityGroupIds:
         - !Ref SecurityGroup
       SubnetId: !Ref Subnet
-      KeyName: !Ref MyKeyPair
       PrivateIpAddress: "192.168.0.11"
-      IamInstanceProfile: !Ref InstanceProfile
-      BlockDeviceMappings:
-        - DeviceName: /dev/sda1
-          Ebs:
-            VolumeSize: 20
-            VolumeType: gp3
       Tags:
         - Key: Name
           Value: isucon12-qualify-1
@@ -175,19 +193,13 @@ Resources:
   QualifyInstance2:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-05c5b59deed48f66b
-      InstanceType: c5.large
+      LaunchTemplate:
+        LaunchTemplateId: !Ref QualifyLaunchTemplate
+        Version: !GetAtt QualifyLaunchTemplate.LatestVersionNumber
       SecurityGroupIds:
         - !Ref SecurityGroup
       SubnetId: !Ref Subnet
-      KeyName: !Ref MyKeyPair
       PrivateIpAddress: "192.168.0.12"
-      IamInstanceProfile: !Ref InstanceProfile
-      BlockDeviceMappings:
-        - DeviceName: /dev/sda1
-          Ebs:
-            VolumeSize: 20
-            VolumeType: gp3
       Tags:
         - Key: Name
           Value: isucon12-qualify-2
@@ -199,19 +211,13 @@ Resources:
   QualifyInstance3:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-05c5b59deed48f66b
-      InstanceType: c5.large
+      LaunchTemplate:
+        LaunchTemplateId: !Ref QualifyLaunchTemplate
+        Version: !GetAtt QualifyLaunchTemplate.LatestVersionNumber
       SecurityGroupIds:
         - !Ref SecurityGroup
       SubnetId: !Ref Subnet
-      KeyName: !Ref MyKeyPair
       PrivateIpAddress: "192.168.0.13"
-      IamInstanceProfile: !Ref InstanceProfile
-      BlockDeviceMappings:
-        - DeviceName: /dev/sda1
-          Ebs:
-            VolumeSize: 20
-            VolumeType: gp3
       Tags:
         - Key: Name
           Value: isucon12-qualify-3

@@ -88,6 +88,11 @@ build {
     source      = "isucon12-qualify/data"
   }
 
+  provisioner "file" {
+    destination = "/dev/shm/isucon12-portal"
+    source      = "isucon12-qualify/isucon12-portal"
+  }
+
   provisioner "shell" {
     env = {
       DEBIAN_FRONTEND = "noninteractive"
@@ -97,6 +102,7 @@ build {
       "tar xf mitamae.tar.gz",
       "cd mitamae",
       "sudo ./setup.sh",
+      "sudo apt-get update",
       "sudo ./mitamae local roles/default.rb",
 
       # install initial data and codes
@@ -104,6 +110,7 @@ build {
       "sudo rsync -a /dev/shm/public/ /home/isucon/public/",
       "sudo rsync -a /dev/shm/bench/ /home/isucon/bench/",
       "sudo rsync -a /dev/shm/data/ /home/isucon/data/",
+      "sudo rsync -a /dev/shm/isucon12-portal/ /home/isucon/isucon12-portal/",
       "sudo tar xvf /dev/shm/initial_data.tar.gz -C /home/isucon",
       "sudo chown -R isucon:isucon /home/isucon",
 
